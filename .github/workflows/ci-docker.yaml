@@ -1,5 +1,6 @@
 name: ci
 on:
+  push:
   release:
     types: [published]
 jobs:
@@ -32,9 +33,10 @@ jobs:
         with:
           context: .
           push: true
-          tags: ${{ github.repository }}:${{ github.event.release.tag_name }}
+          tags: ${{ github.repository }}:${{github.ref_name}}
           build-args: |
             "RELEASE_VERSION=${{ github.event.release.tag_name }}"
             "GITHUB_REPOSITORY_OWNER=${{ github.repository_owner }}"
+          file: Dockerfile.dev
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,mode=max,dest=/tmp/.buildx-cache
