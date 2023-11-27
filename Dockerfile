@@ -1,6 +1,7 @@
-FROM alpine:3.16 as builder
+FROM alpine:3.18 as builder
 
 ARG RELEASE_VERSION
+ARG GITHUB_REPOSITORY_OWNER
 
 RUN apk add --no-cache ca-certificates openssl
 RUN wget https://github.com/${GITHUB_REPOSITORY_OWNER}/goreplay/releases/download/${RELEASE_VERSION}/gor_${RELEASE_VERSION}_x64.tar.gz -O gor.tar.gz
