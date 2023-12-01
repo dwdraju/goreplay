@@ -1,21 +1,12 @@
-FROM golang:1.21 as builder
-ENV GOOS=linux
-RUN apt-get update && apt-get install flex bison -y
+FROM alpine:3.18 as builder
 
-RUN wget http://www.tcpdump.org/release/libpcap-1.7.4.tar.gz && \
-	tar xzf libpcap-1.7.4.tar.gz
-WORKDIR libpcap-1.7.4
-RUN ./configure && make install
+ARG RELEASE_VERSION
 
-RUN mkdir $HOME/gocode/
-WORKDIR $HOME/gocode/
-ADD . goreplay/
-WORKDIR goreplay
-RUN go get github.com/xdg-go/scram
-RUN go build -ldflags "-extldflags \"-static\"" -o /bin/gor ./cmd/gor/
-RUN echo $?
+RUN apk add --no-cache ca-certificates openssl
+RUN wget https://github.com/buger/goreplay/releases/download/${RELEASE_VERSION}/gor_${RELEASE_VERSION}_x64.tar.gz -O gor.tar.gz
+RUN tar xzf gor.tar.gz
 
 FROM scratch
 COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
-COPY --from=builder /bin/gor .
+COPY --from=builder /gor .
 ENTRYPOINT ["./gor"]
