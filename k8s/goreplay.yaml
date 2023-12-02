@@ -12,10 +12,11 @@ spec:
         name: goreplay-daemon
     spec:
       hostNetwork: true
+      dnsPolicy: ClusterFirstWithHostNet
       serviceAccountName: goreplay
       containers:
       - name: goreplay
         imagePullPolicy: Always
         image: dwdraju/goreplay
         command: ["./gor"]
-        args: ["--input-raw", "k8s://goreplay/deployments/nginx:80", "--output-stdout"]
+        args: ["--input-raw", "k8s://goreplay/deployment/nginx:80", "--output-stdout", "--output-http", "http://httpd-service.goreplay.svc.cluster.local:80"]
